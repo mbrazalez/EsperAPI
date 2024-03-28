@@ -1,9 +1,8 @@
-package esper.api4eventprocessing.repository;
+package esper.api4eventprocessing.repositories;
 
 import com.espertech.esper.common.client.EPCompiled;
+import com.espertech.esper.common.client.EventBean;
 import com.espertech.esper.common.client.configuration.Configuration;
-import com.espertech.esper.common.client.util.EventTypeBusModifier;
-import com.espertech.esper.common.client.util.NameAccessModifier;
 import com.espertech.esper.compiler.client.*;
 import com.espertech.esper.runtime.client.*;
 import esper.api4eventprocessing.events.HumidityEvent;
@@ -15,29 +14,29 @@ import org.slf4j.LoggerFactory;
 import java.awt.event.WindowEvent;
 import java.util.*;
 
-public class EsperRepository {
-    private static final Logger log = LoggerFactory.getLogger(EsperRepository.class);
-    private static EsperRepository instance;
+public class EsperEngineRepository {
+    private static final Logger log = LoggerFactory.getLogger(EsperEngineRepository.class);
+    private static EsperEngineRepository instance;
     private Configuration configuration;
     private CompilerArguments compilerArguments;
     private EPCompiler epCompiler;
     private EPRuntime epRuntime;
 
-    private EsperRepository() {
+    private EsperEngineRepository() {
         initializeConfiguration();
     }
 
-    public static synchronized EsperRepository getInstance() {
+    public static synchronized EsperEngineRepository getInstance() {
         if (instance == null) {
-            instance = new EsperRepository();
+            instance = new EsperEngineRepository();
         }
         return instance;
     }
 
     private void initializeConfiguration() {
         this.configuration = new Configuration();
-        this.configuration.getCompiler().getByteCode().setAccessModifierEventType(NameAccessModifier.PUBLIC);
-        this.configuration.getCompiler().getByteCode().setBusModifierEventType(EventTypeBusModifier.BUS);
+        //this.configuration.getCompiler().getByteCode().setAccessModifierEventType(NameAccessModifier.PUBLIC);
+        //this.configuration.getCompiler().getByteCode().setBusModifierEventType(EventTypeBusModifier.BUS);
         this.initializePollutionControlEventTypes();
         this.compilerArguments = new CompilerArguments(this.configuration);
         this.epCompiler = EPCompilerProvider.getCompiler();
@@ -52,23 +51,14 @@ public class EsperRepository {
         this.configuration.getCommon().addEventType(PM25Event.class);
     }
 
-    public EPCompiled compile(String epl) {
-        try {
-            return epCompiler.compile(epl, this.compilerArguments);
-        }catch (EPCompileException e){
-            log.error("Error deploying EPCompiled: " + e.getMessage(), e);
-            return null;
-        }
+    public EPCompiled compile(String epl) throws EPCompileException {
+        this.compilerArguments.getPath().add(this.epRuntime.getRuntimePath());
+        return epCompiler.compile(epl, this.compilerArguments);
     }
 
-    public String deploy(EPCompiled epCompiled) {
-        try {
-            EPDeployment deployment = epRuntime.getDeploymentService().deploy(epCompiled);
-            return "Schema deployed successfully with id " + deployment.getDeploymentId() +"\n";
-        }catch (EPDeployException e){
-            log.error("Error deploying EPDeploy: " + e.getMessage(), e);
-            return null;
-        }
+    public String deploy(EPCompiled epCompiled) throws EPDeployException {
+        EPDeployment deployment = this.epRuntime.getDeploymentService().deploy(epCompiled);
+        return deployment.getDeploymentId();
     }
 
     public String[] getDeployedEventTypes(){
@@ -95,6 +85,15 @@ public class EsperRepository {
 
     public EPStatement getStatement(String deploymentId, String statementName) {
         return epRuntime.getDeploymentService().getStatement(deploymentId, statementName);
+    }
+
+    public void addListener(String name, String id){
+        EPStatement deployedStmnt = this.epRuntime.getDeploymentService().getStatement(id,name);
+        deployedStmnt.addListener((newEvent,oldEvent, stmnt, runtime) -> {
+            for (EventBean event: newEvent){
+                System.out.printf("Evento complejo detectado, venga a funcionar piolin");
+            }
+        });
     }
 
 

@@ -2,7 +2,7 @@ package esper.api4eventprocessing.petitions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class EventPetition {
+public class EventJsonPetition {
     @JsonProperty("name")
     public String eventTypeName;
     @JsonProperty("content")

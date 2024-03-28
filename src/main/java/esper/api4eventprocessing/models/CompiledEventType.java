@@ -2,8 +2,8 @@ package esper.api4eventprocessing.models;
 
 import com.espertech.esper.common.client.EPCompiled;
 
-public class CompiledSchema {
-    public CompiledSchema(String name,EPCompiled epCompiled){
+public class CompiledEventType {
+    public CompiledEventType(String name, EPCompiled epCompiled){
         this.name = name;
         this.epCompiled = epCompiled;
     }
