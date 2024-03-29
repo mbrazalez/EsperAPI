@@ -56,9 +56,8 @@ public class EsperEngineRepository {
         return epCompiler.compile(epl, this.compilerArguments);
     }
 
-    public String deploy(EPCompiled epCompiled) throws EPDeployException {
-        EPDeployment deployment = this.epRuntime.getDeploymentService().deploy(epCompiled);
-        return deployment.getDeploymentId();
+    public EPDeployment deploy(EPCompiled epCompiled) throws EPDeployException {
+        return this.epRuntime.getDeploymentService().deploy(epCompiled);
     }
 
     public String[] getDeployedEventTypes(){
@@ -71,7 +70,7 @@ public class EsperEngineRepository {
 
     public String undeploy(String deploymentId) throws EPUndeployException {
         epRuntime.getDeploymentService().undeploy(deploymentId);
-        return "Event with id " + deploymentId + " undeployed successfully \n";
+        return deploymentId;
     }
 
     public void sendEvent(Map<String, Object> event, String name) {
@@ -95,7 +94,5 @@ public class EsperEngineRepository {
             }
         });
     }
-
-
 
 }
