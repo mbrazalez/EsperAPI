@@ -1,9 +1,9 @@
 package esper.api4eventprocessing.events;
 
 public class Event {
-    private String  station;
-    private long timestamp;
-    private float value;
+    public String  station;
+    public long timestamp;
+    public float value;
 
     public Event(String station, long timestamp, float value){
         this.station = station;

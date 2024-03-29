@@ -2,14 +2,14 @@ package esper.api4eventprocessing.controllers;
 
 import com.espertech.esper.compiler.client.EPCompileException;
 import com.espertech.esper.runtime.client.EPDeployException;
-import esper.api4eventprocessing.models.EventTypeDetails;
 import esper.api4eventprocessing.petitions.EventTypePetition;
 import esper.api4eventprocessing.responses.EventTypeResponse;
 import esper.api4eventprocessing.services.EsperService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class EventTypeController {
@@ -29,7 +29,7 @@ public class EventTypeController {
             return new ResponseEntity<>("Parameters missing in the request body",HttpStatus.BAD_REQUEST);
 
         try {
-            EventTypeResponse response = esperService.newEventTypeJson(newEventType);
+            EventTypeResponse response = esperService.newEventTypeJson(name, schema);
 
             if (response != null)
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -59,23 +59,23 @@ public class EventTypeController {
 
     @GetMapping("/deployed_event-types")
     public ResponseEntity<?> getDeployedEventTypes(){
-        String[] response = esperService.getDeployedEventTypes();
-        return response.length > 0 ? new ResponseEntity<>(response, HttpStatus.OK) : new ResponseEntity<>("There is no event type deployed", HttpStatus.NOT_FOUND);
+        List<String> response = esperService.getDeployed("EventType");
+        return !response.isEmpty() ? new ResponseEntity<>(response, HttpStatus.OK) : new ResponseEntity<>("There is no event type deployed", HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/event-type_deployed/{id}")
+    @GetMapping("/event-type_is_deployed/{id}")
     public boolean isDeployed(@PathVariable("id") String id){
         return esperService.isDeployed(id);
     }
 
     @DeleteMapping("/undeploy_event-type/{id}")
-    public ResponseEntity<?> undeployEventType(@PathVariable("id")String id){
-        String response =  esperService.undeploy(id);
+    public ResponseEntity<?> undeployEventType(@PathVariable("id") String id){
+        String response =  esperService.undeploy(id,"EventType");
 
         if (response != null)
-            return new ResponseEntity<>("The event type " + response + " was removed successfully", HttpStatus.OK);
+            return new ResponseEntity<>("The event type " + response + " has been removed successfully", HttpStatus.OK);
 
-        return new ResponseEntity<>("There is any event type deployed with the given id", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("There is any event type deployed with the given id or there is a pattern using this event type", HttpStatus.NOT_FOUND);
     }
 
 }

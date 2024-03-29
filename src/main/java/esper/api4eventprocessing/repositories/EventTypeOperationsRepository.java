@@ -2,18 +2,15 @@ package esper.api4eventprocessing.repositories;
 
 import com.espertech.esper.common.client.EPCompiled;
 import com.espertech.esper.runtime.client.EPDeployment;
+import esper.api4eventprocessing.interfaces.IEventTypeOperations;
 import esper.api4eventprocessing.models.EventTypeDetails;
-import esper.api4eventprocessing.models.PatternDetails;
-
 import java.util.*;
 
-public class EPLMonitorRepository {
+public class EventTypeOperationsRepository implements IEventTypeOperations {
     private Map<String, EventTypeDetails> eventTypeDetailsMap;
-    private Map<String, PatternDetails> patternDetailsMap;
 
-    public EPLMonitorRepository() {
+    public EventTypeOperationsRepository() {
         this.eventTypeDetailsMap = new HashMap<>();
-        this.patternDetailsMap = new HashMap<>();
     }
 
     public boolean isEventTypeCompiled(String eventTypeName){
@@ -40,7 +37,7 @@ public class EPLMonitorRepository {
         return eventTypeDetails.getSchema();
     }
 
-    public String[] getDeployedEventTypesWithName(int size){
+    public List<String> getDeployedEventTypesWithName(){
         List<String> deployedEventTypesWithName = new ArrayList<>();
         Collection<EventTypeDetails> eventTypes = this.eventTypeDetailsMap.values();
 
@@ -50,7 +47,7 @@ public class EPLMonitorRepository {
             }
         }
 
-        return deployedEventTypesWithName.toArray(new String[size]);
+        return deployedEventTypesWithName;
     }
 
     public String removeDeployedId(String deployId){
@@ -64,23 +61,5 @@ public class EPLMonitorRepository {
         }
 
         return null;
-    }
-
-
-    public EPCompiled findCompiledPattern(String patternName) {
-        PatternDetails details = patternDetailsMap.get(patternName);
-        return details != null ? details.getEpCompiled() : null;
-    }
-
-    public void removeCompiledEventType(String eventTypeName) {
-        eventTypeDetailsMap.remove(eventTypeName);
-    }
-
-    public void removeCompiledPattern(String patternName) {
-        patternDetailsMap.remove(patternName);
-    }
-
-    public boolean isPatternCompiled(String patternName){
-        return patternDetailsMap.containsKey(patternName);
     }
 }
