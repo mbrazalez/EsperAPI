@@ -12,7 +12,7 @@ public class MqttConfig {
     @Bean
     public IMqttClient mqttClient() throws MqttException {
         String publisherId = "spring-api";
-        IMqttClient client = new MqttClient("tcp://54.78.184.71:1883", publisherId);
+        IMqttClient client = new MqttClient("tcp://52.215.221.99:1883", publisherId);
         MqttConnectOptions options = new MqttConnectOptions();
         options.setAutomaticReconnect(true);
         options.setCleanSession(true);

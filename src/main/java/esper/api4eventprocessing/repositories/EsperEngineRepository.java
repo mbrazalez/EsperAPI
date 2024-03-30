@@ -11,6 +11,7 @@ import esper.api4eventprocessing.events.HumidityEvent;
 import esper.api4eventprocessing.events.PM10Event;
 import esper.api4eventprocessing.events.PM25Event;
 import esper.api4eventprocessing.events.WindSpeedEvent;
+import esper.api4eventprocessing.interfaces.MqttPublisherCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,19 +87,21 @@ public class EsperEngineRepository {
         epRuntime.getEventService().sendEventJson(event,name);
     }
 
-    public EPStatement getStatement(String deploymentId, String statementName) {
-        return epRuntime.getDeploymentService().getStatement(deploymentId, statementName);
-    }
-
-    public void addListener(String name, String id){
-        EPStatement deployedStmnt = this.epRuntime.getDeploymentService().getStatement(id,name);
-        deployedStmnt.addListener((newEvents,oldEvents, stmnt, runtime) -> {
+    public void addListener(String name, String id, MqttPublisherCallback callback){
+        EPStatement deployedStmt = this.epRuntime.getDeploymentService().getStatement(id,name);
+        deployedStmt.addListener((newEvents,oldEvents, stmt, runtime) -> {
             if (newEvents != null){
                 EventBean lastEvent = newEvents[0];
                 System.out.printf("##################################\n");
                 System.out.printf("Evento detectado \n");
                 System.out.printf(lastEvent.toString()+"\n");
                 System.out.printf("##################################\n");
+                try {
+                    String eventString = lastEvent.toString();
+                    callback.publishAsync(eventString.getBytes());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             }
         });

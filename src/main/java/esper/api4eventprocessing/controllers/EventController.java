@@ -22,7 +22,7 @@ public class EventController {
         this.esperService = esperService;
     }
 
-    @PostMapping("/send_event_json")
+    @PostMapping("/api/v1/send_event_json")
     public ResponseEntity<?> sendEventJson(@RequestBody EventJsonPetition eventJsonPetition){
         String name = eventJsonPetition.eventTypeName;
         String content = eventJsonPetition.content;
@@ -39,7 +39,7 @@ public class EventController {
         }
     }
 
-    @PostMapping("/send_pm10-event")
+    @PostMapping("/api/v1/send_pm10-event")
     public ResponseEntity<?> pm10Event(@RequestBody PM10Event pm10Event){
         if (pm10Event.station == null)
             return new ResponseEntity<>("Parameters missing in the request body", HttpStatus.BAD_REQUEST);
@@ -53,7 +53,7 @@ public class EventController {
         }
     }
 
-    @PostMapping("/send_pm25-event")
+    @PostMapping("/api/v1/send_pm25-event")
     public ResponseEntity<?> sendPM25Event(@RequestBody PM25Event pm25Event){
         if (pm25Event.station == null)
             return new ResponseEntity<>("Parameters missing in the request body", HttpStatus.BAD_REQUEST);
@@ -66,7 +66,7 @@ public class EventController {
         }
     }
 
-    @PostMapping("/send_windspeed-event")
+    @PostMapping("/api/v1/send_windspeed-event")
     public ResponseEntity<?> sendPM25Event(@RequestBody WindSpeedEvent windSpeedEvent){
         if (windSpeedEvent.station == null)
             return new ResponseEntity<>("Parameters missing in the request body", HttpStatus.BAD_REQUEST);
@@ -80,7 +80,7 @@ public class EventController {
         }
     }
 
-    @PostMapping("/send_humidity-event")
+    @PostMapping("/api/v1/send_humidity-event")
     public ResponseEntity<?> sendPM25Event(@RequestBody HumidityEvent humidityEvent){
         if (humidityEvent.station == null)
             return new ResponseEntity<>("Parameters missing in the request body", HttpStatus.BAD_REQUEST);

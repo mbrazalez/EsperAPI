@@ -20,7 +20,7 @@ public class EventTypeController {
         this.esperService = esperService;
     }
 
-    @PostMapping("/new_event-type_json")
+    @PostMapping("/api/v1/new_event-type_json")
     public ResponseEntity<?> newEventTypeJson(@RequestBody EventTypePetition newEventType){
         String name = newEventType.name;
         String schema = newEventType.schema;
@@ -42,7 +42,7 @@ public class EventTypeController {
         }
     }
 
-    @PutMapping("/deploy_event-type/{name}")
+    @PutMapping("/api/v1/deploy_event-type/{name}")
     public ResponseEntity<?> deployEventType(@PathVariable("name") String eventTypeName){
         try {
             EventTypeResponse response = esperService.deployEventType(eventTypeName);
@@ -57,18 +57,18 @@ public class EventTypeController {
         }
     }
 
-    @GetMapping("/deployed_event-types")
+    @GetMapping("/api/v1/deployed_event-types")
     public ResponseEntity<?> getDeployedEventTypes(){
         List<String> response = esperService.getDeployed("EventType");
         return !response.isEmpty() ? new ResponseEntity<>(response, HttpStatus.OK) : new ResponseEntity<>("There is no event type deployed", HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/event-type_is_deployed/{id}")
+    @GetMapping("/api/v1/event-type_is_deployed/{id}")
     public boolean isDeployed(@PathVariable("id") String id){
         return esperService.isDeployed(id);
     }
 
-    @DeleteMapping("/undeploy_event-type/{id}")
+    @DeleteMapping("/api/v1/undeploy_event-type/{id}")
     public ResponseEntity<?> undeployEventType(@PathVariable("id") String id){
         String response =  esperService.undeploy(id,"EventType");
 

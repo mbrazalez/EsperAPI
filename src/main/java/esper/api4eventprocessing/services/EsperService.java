@@ -6,6 +6,7 @@ import com.espertech.esper.runtime.client.EPDeployException;
 import com.espertech.esper.runtime.client.EPDeployment;
 import com.espertech.esper.runtime.client.EPUndeployException;
 import esper.api4eventprocessing.events.Event;
+import esper.api4eventprocessing.interfaces.MqttPublisherCallback;
 import esper.api4eventprocessing.petitions.EventJsonPetition;
 import esper.api4eventprocessing.repositories.EventTypeOperationsRepository;
 import esper.api4eventprocessing.repositories.EsperEngineRepository;
@@ -101,13 +102,13 @@ public class EsperService {
         return  null;
     }
 
-    public PatternResponse deployPattern(String patternName) throws EPDeployException {
+    public PatternResponse deployPattern(String patternName,  MqttPublisherCallback callback) throws EPDeployException {
         EPCompiled epCompiled = this.patternOperationsRepository.findCompiledPattern(patternName);
 
         if (epCompiled != null){
             EPDeployment epDeployment = this.esperEngineRepository.deploy(epCompiled);
             String deploymentId = epDeployment.getDeploymentId();
-            this.esperEngineRepository.addListener(patternName,deploymentId);
+            this.esperEngineRepository.addListener(patternName,deploymentId, callback);
             this.patternOperationsRepository.addDeployedPattern(patternName, epDeployment);
             String query = this.patternOperationsRepository.getPatternQuery(patternName);
             return new PatternResponse(patternName, query, "Pattern deployed successfully with id " + deploymentId);

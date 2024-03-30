@@ -1,19 +1,26 @@
 package esper.api4eventprocessing.services;
 
+import com.espertech.esper.runtime.client.EPDeployException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import esper.api4eventprocessing.events.HumidityEvent;
 import esper.api4eventprocessing.events.PM10Event;
 import esper.api4eventprocessing.events.PM25Event;
 import esper.api4eventprocessing.events.WindSpeedEvent;
+import esper.api4eventprocessing.responses.PatternResponse;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Service
 public class MqttService {
     private final IMqttClient mqttClient;
     private final EsperService esperService;
+    private ExecutorService executorService = Executors.newCachedThreadPool();
+
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -24,6 +31,25 @@ public class MqttService {
         this.mqttClient = mqttClient;
         this.esperService = esperService;
     }
+
+    public PatternResponse deployPattern(String patternName) throws EPDeployException {
+        return this.esperService.deployPattern(patternName, (message) -> {
+            executorService.submit(() -> {
+                try {
+                    if (!mqttClient.isConnected()) {
+                        mqttClient.reconnect();
+                    }
+                    MqttMessage mqttMessage = new MqttMessage(message);
+                    mqttMessage.setQos(0); // Ajusta el QoS según necesites
+                    mqttClient.publish("ceptopic", mqttMessage);
+                    System.out.println("Mensaje publicado de forma asíncrona.");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        });
+    }
+
 
     public void subscribeToTopics() throws Exception {
         if (!mqttClient.isConnected()) {

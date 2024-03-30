@@ -6,6 +6,8 @@ import esper.api4eventprocessing.petitions.PatternPetition;
 import esper.api4eventprocessing.responses.EventTypeResponse;
 import esper.api4eventprocessing.responses.PatternResponse;
 import esper.api4eventprocessing.services.EsperService;
+import esper.api4eventprocessing.services.MqttService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +19,14 @@ public class PatternController {
 
     private final EsperService esperService;
 
-    public PatternController(EsperService esperService) {
+    private final MqttService mqttService;
+
+    public PatternController(EsperService esperService, MqttService mqttService) {
         this.esperService = esperService;
+        this.mqttService = mqttService;
     }
 
-    @PostMapping("/new_pattern")
+    @PostMapping("/api/v1/new_pattern")
     public ResponseEntity<?> addNewPattern(@RequestBody PatternPetition patternPetition){
         String name = patternPetition.name;
         String query = patternPetition.query;
@@ -43,10 +48,10 @@ public class PatternController {
         }
     }
 
-    @PutMapping("/deploy_pattern/{name}")
+    @PutMapping("/api/v1/deploy_pattern/{name}")
     public ResponseEntity<?> deployPattern(@PathVariable("name") String name){
         try {
-            PatternResponse response = esperService.deployPattern(name);
+            PatternResponse response = mqttService.deployPattern(name);
 
             if (response != null)
                 return new ResponseEntity<>(response, HttpStatus.OK);
@@ -58,7 +63,7 @@ public class PatternController {
         }
     }
 
-    @DeleteMapping("/undeploy_pattern/{id}")
+    @DeleteMapping("/api/v1/undeploy_pattern/{id}")
     public ResponseEntity<?> undeployPattern(@PathVariable("id") String id){
         String response = esperService.undeploy(id,"Pattern");
 
@@ -68,12 +73,12 @@ public class PatternController {
         return new ResponseEntity<>("There is any pattern deployed with the given id", HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/pattern_is_deployed/{id}")
+    @GetMapping("/api/v1/pattern_is_deployed/{id}")
     public boolean isDeployed(@PathVariable("id") String id){
         return esperService.isDeployed(id);
     }
 
-    @GetMapping("/deployed_patterns")
+    @GetMapping("/api/v1/deployed_patterns")
     public ResponseEntity<?> getDeployedEventTypes(){
         List<String> response = esperService.getDeployed("Pattern");
         return !response.isEmpty() ? new ResponseEntity<>(response, HttpStatus.OK) : new ResponseEntity<>("There is no event type deployed", HttpStatus.NOT_FOUND);
