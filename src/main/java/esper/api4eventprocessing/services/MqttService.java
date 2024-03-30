@@ -1,5 +1,10 @@
 package esper.api4eventprocessing.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import esper.api4eventprocessing.events.HumidityEvent;
+import esper.api4eventprocessing.events.PM10Event;
+import esper.api4eventprocessing.events.PM25Event;
+import esper.api4eventprocessing.events.WindSpeedEvent;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +13,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class MqttService {
     private final IMqttClient mqttClient;
+    private final EsperService esperService;
 
     @Autowired
-    public MqttService(IMqttClient mqttClient) {
+    private ObjectMapper objectMapper;
+
+
+    @Autowired
+    public MqttService(IMqttClient mqttClient, EsperService esperService) {
         this.mqttClient = mqttClient;
+        this.esperService = esperService;
     }
 
     public void subscribeToTopics() throws Exception {
@@ -26,19 +37,29 @@ public class MqttService {
 
     private void handleMessage(String topic, MqttMessage message) throws Exception {
         String payload = new String(message.getPayload());
-        System.out.printf(payload);
-        System.out.printf("LLega chicha!!!");
-        // Example of dispatching:
+        System.out.printf(payload+"\n");
+
         switch(topic) {
             case "pm10topic":
-                // Deserialize payload to PM10Event
-                // Call pm10Event endpoint logic or service directly
+                try{
+                    PM10Event pm10Event =  this.objectMapper.readValue(payload, PM10Event.class);
+                    esperService.sendEvent(pm10Event,"PM10Event");
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
                 break;
             case "pm25topic":
-                // Deserialize payload to PM25Event
-                // Call pm25Event endpoint logic or service directly
+                PM25Event pm25Event = this.objectMapper.readValue(payload, PM25Event.class);
+                esperService.sendEvent(pm25Event,"PM25Event");
                 break;
-            // Handle other cases...
+            case "humiditytopic":
+                HumidityEvent humidityEvent = this.objectMapper.readValue(payload, HumidityEvent.class);
+                esperService.sendEvent(humidityEvent,"HumidityEvent");
+                break;
+            case "windtopic":
+                WindSpeedEvent windSpeedEvent = this.objectMapper.readValue(payload, WindSpeedEvent.class);
+                esperService.sendEvent(windSpeedEvent,"WindSpeedEvent");
+                break;
         }
     }
 }

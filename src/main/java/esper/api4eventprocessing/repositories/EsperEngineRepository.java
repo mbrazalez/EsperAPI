@@ -3,6 +3,8 @@ package esper.api4eventprocessing.repositories;
 import com.espertech.esper.common.client.EPCompiled;
 import com.espertech.esper.common.client.EventBean;
 import com.espertech.esper.common.client.configuration.Configuration;
+import com.espertech.esper.common.client.util.EventTypeBusModifier;
+import com.espertech.esper.common.client.util.NameAccessModifier;
 import com.espertech.esper.compiler.client.*;
 import com.espertech.esper.runtime.client.*;
 import esper.api4eventprocessing.events.HumidityEvent;
@@ -33,8 +35,8 @@ public class EsperEngineRepository {
 
     private void initializeConfiguration() {
         this.configuration = new Configuration();
-        //this.configuration.getCompiler().getByteCode().setAccessModifierEventType(NameAccessModifier.PUBLIC);
-        //this.configuration.getCompiler().getByteCode().setBusModifierEventType(EventTypeBusModifier.BUS);
+        this.configuration.getCompiler().getByteCode().setAccessModifierEventType(NameAccessModifier.PUBLIC);
+        this.configuration.getCompiler().getByteCode().setBusModifierEventType(EventTypeBusModifier.BUS);
         this.initializePollutionControlEventTypes();
         this.compilerArguments = new CompilerArguments(this.configuration);
         this.epCompiler = EPCompilerProvider.getCompiler();
@@ -90,10 +92,14 @@ public class EsperEngineRepository {
 
     public void addListener(String name, String id){
         EPStatement deployedStmnt = this.epRuntime.getDeploymentService().getStatement(id,name);
-        deployedStmnt.addListener((newEvent,oldEvent, stmnt, runtime) -> {
-            for (EventBean event: newEvent){
-                System.out.printf("Evento complejo detectado, venga a funcionar piolin");
-                System.out.printf(event.toString());
+        deployedStmnt.addListener((newEvents,oldEvents, stmnt, runtime) -> {
+            if (newEvents != null){
+                EventBean lastEvent = newEvents[0];
+                System.out.printf("##################################\n");
+                System.out.printf("Evento detectado \n");
+                System.out.printf(lastEvent.toString()+"\n");
+                System.out.printf("##################################\n");
+
             }
         });
     }

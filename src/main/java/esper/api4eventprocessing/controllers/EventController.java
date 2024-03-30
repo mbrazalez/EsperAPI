@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class EventController {
 
-    @Autowired
-    private EsperService esperService;
+    private final EsperService esperService;
+
+    public EventController(EsperService esperService) {
+        this.esperService = esperService;
+    }
 
     @PostMapping("/send_event_json")
     public ResponseEntity<?> sendEventJson(@RequestBody EventJsonPetition eventJsonPetition){
