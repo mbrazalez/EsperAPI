@@ -10,11 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface IEventTypeOperations {
-    public boolean isEventTypeCompiled(String eventTypeName);
-    public void addCompiledEventType(String eventTypeName, String schema,EPCompiled compiled);
-    public EPCompiled findCompiledEventType(String eventTypeName);
-    public void addDeployedEventType(String eventTypeName, EPDeployment deployment);
-    public String getEventTypeSchema(String eventTypeName);
-    public List<String> getDeployedEventTypesWithName();
-    public String removeDeployedId(String deployId);
+     boolean isEventTypeCompiled(String eventTypeName);
+     void addCompiledEventType(String eventTypeName, String schema,EPCompiled compiled);
+     EPCompiled findCompiledEventType(String eventTypeName);
+     void addDeployedEventType(String eventTypeName, EPDeployment deployment);
+     String getEventTypeSchema(String eventTypeName);
+     List<String> getDeployedEventTypesWithName();
+     String removeDeployedId(String deployId);
+     String getDeployedId(String eventTypeName);
 }

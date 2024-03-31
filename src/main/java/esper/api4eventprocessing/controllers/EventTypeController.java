@@ -68,13 +68,27 @@ public class EventTypeController {
         return esperService.isDeployed(id);
     }
 
+    @GetMapping("/api/v1/event-type_get_deployedid/{name}")
+    public ResponseEntity<String> getDeployedId(@PathVariable("name") String name){
+        try {
+            return new ResponseEntity<>(esperService.getDeployedIdEventType(name), HttpStatus.OK);
+        } catch (Exception ex){
+            return new ResponseEntity<>("Event type not found", HttpStatus.NOT_FOUND);
+        }
+    }
+
     @DeleteMapping("/api/v1/undeploy_event-type/{id}")
     public ResponseEntity<?> undeployEventType(@PathVariable("id") String id){
-        String response =  esperService.undeploy(id,"EventType");
+        try {
+            String response =  esperService.undeploy(id,"EventType");
 
-        if (response != null)
-            return new ResponseEntity<>("The event type " + response + " has been removed successfully", HttpStatus.OK);
+            if (response != null)
+                return new ResponseEntity<>("The event type " + response + " has been removed successfully", HttpStatus.OK);
 
+        }catch (NullPointerException ex){
+            return new ResponseEntity<>("The event type in json format has been removed successfully", HttpStatus.OK);
+
+        }
         return new ResponseEntity<>("There is any event type deployed with the given id or there is a pattern using this event type", HttpStatus.NOT_FOUND);
     }
 

@@ -87,6 +87,14 @@ public class EsperEngineRepository {
         epRuntime.getEventService().sendEventJson(event,name);
     }
 
+    public void undeployAll(){
+        try {
+            epRuntime.getDeploymentService().undeployAll();
+        } catch (EPUndeployException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void addListener(String name, String id, MqttPublisherCallback callback){
         EPStatement deployedStmt = this.epRuntime.getDeploymentService().getStatement(id,name);
         deployedStmt.addListener((newEvents,oldEvents, stmt, runtime) -> {

@@ -68,7 +68,7 @@ public class PatternController {
         String response = esperService.undeploy(id,"Pattern");
 
         if (response != null)
-            return new ResponseEntity<>("The pattern "+ response + " has been removed successfully", HttpStatus.OK);
+                return new ResponseEntity<>("The pattern "+ response + " has been removed successfully", HttpStatus.OK);
 
         return new ResponseEntity<>("There is any pattern deployed with the given id", HttpStatus.NOT_FOUND);
     }
@@ -78,8 +78,17 @@ public class PatternController {
         return esperService.isDeployed(id);
     }
 
+    @GetMapping("/api/v1/pattern_get_deployedid/{name}")
+    public ResponseEntity<String> getDeployedId(@PathVariable("name") String name){
+        try {
+            return new ResponseEntity<>(esperService.getDeployedIdPattern(name), HttpStatus.OK);
+        } catch (Exception ex){
+            return new ResponseEntity<>("Event type not found", HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping("/api/v1/deployed_patterns")
-    public ResponseEntity<?> getDeployedEventTypes(){
+    public ResponseEntity<?> getDeployedPatterns(){
         List<String> response = esperService.getDeployed("Pattern");
         return !response.isEmpty() ? new ResponseEntity<>(response, HttpStatus.OK) : new ResponseEntity<>("There is no event type deployed", HttpStatus.NOT_FOUND);
     }

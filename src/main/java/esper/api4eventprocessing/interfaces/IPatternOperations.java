@@ -6,11 +6,13 @@ import com.espertech.esper.runtime.client.EPDeployment;
 import java.util.List;
 
 public interface IPatternOperations {
-    public boolean isPatternCompiled(String patternName);
-    public void addCompiledPattern(String patternName, String query, EPCompiled compiled);
-    public EPCompiled findCompiledPattern(String patterName);
-    public void addDeployedPattern(String patternName, EPDeployment deployment);
-    public String getPatternQuery(String patternName);
-    public List<String> getDeployedPatternsWithName();
-    public String removeDeployedId(String deployId);
+     boolean isPatternCompiled(String patternName);
+     void addCompiledPattern(String patternName, String query, EPCompiled compiled);
+     EPCompiled findCompiledPattern(String patterName);
+     void addDeployedPattern(String patternName, EPDeployment deployment);
+     String getPatternQuery(String patternName);
+     List<String> getDeployedPatternsWithName();
+     String removeDeployedId(String deployId);
+     String getDeployedId(String patternName);
+
 }

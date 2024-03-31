@@ -9,7 +9,7 @@ import esper.api4eventprocessing.models.PatternDetails;
 import java.util.*;
 
 public class PatternOperationsRepository implements IPatternOperations {
-    private Map<String, PatternDetails> patternDetailsMap;
+    private final Map<String, PatternDetails> patternDetailsMap;
 
     public PatternOperationsRepository() {
         this.patternDetailsMap = new HashMap<>();
@@ -70,6 +70,11 @@ public class PatternOperationsRepository implements IPatternOperations {
         }
 
         return null;
+    }
+
+    @Override
+    public String getDeployedId(String patternName){
+        return this.patternDetailsMap.get(patternName).getDeployId();
     }
 
 }

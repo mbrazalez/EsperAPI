@@ -5,23 +5,19 @@ import com.espertech.esper.compiler.client.EPCompileException;
 import com.espertech.esper.runtime.client.EPDeployException;
 import com.espertech.esper.runtime.client.EPDeployment;
 import com.espertech.esper.runtime.client.EPUndeployException;
-import esper.api4eventprocessing.events.Event;
+import esper.api4eventprocessing.interfaces.IEsperService;
 import esper.api4eventprocessing.interfaces.MqttPublisherCallback;
-import esper.api4eventprocessing.petitions.EventJsonPetition;
 import esper.api4eventprocessing.repositories.EventTypeOperationsRepository;
 import esper.api4eventprocessing.repositories.EsperEngineRepository;
 import esper.api4eventprocessing.repositories.PatternOperationsRepository;
 import esper.api4eventprocessing.responses.EventTypeResponse;
 import esper.api4eventprocessing.responses.PatternResponse;
 import org.springframework.stereotype.Service;
-
-import java.text.ParseException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 @Service
-public class EsperService {
+public class EsperService implements IEsperService {
     private final EsperEngineRepository esperEngineRepository;
     private final EventTypeOperationsRepository eventTypeOperationsRepository;
     private final PatternOperationsRepository patternOperationsRepository;
@@ -32,6 +28,7 @@ public class EsperService {
         this.patternOperationsRepository = new PatternOperationsRepository();
     }
 
+    @Override
     public EventTypeResponse newEventTypeJson(String eventTypeName, String schema) throws EPCompileException {
         boolean eventAlreadyCompiled = this.eventTypeOperationsRepository.isEventTypeCompiled(eventTypeName);
 
@@ -44,6 +41,7 @@ public class EsperService {
         return null;
     }
 
+    @Override
     public EventTypeResponse deployEventType(String eventTypeName) throws EPDeployException {
         EPCompiled epCompiled = this.eventTypeOperationsRepository.findCompiledEventType(eventTypeName);
 
@@ -57,6 +55,7 @@ public class EsperService {
         return null;
     }
 
+    @Override
     public List<String> getDeployed(String type){
         String[] deployedEventTypes = this.esperEngineRepository.getDeployedEventTypes();
 
@@ -71,10 +70,17 @@ public class EsperService {
         return Collections.emptyList();
     }
 
+    @Override
     public boolean isDeployed(String id){
         return this.esperEngineRepository.isDeployed(id);
     }
 
+    @Override
+    public String getDeployedIdEventType(String name){
+        return this.eventTypeOperationsRepository.getDeployedId(name);
+    }
+
+    @Override
     public String undeploy(String id, String type) {
         try {
             String deployId = this.esperEngineRepository.undeploy(id);
@@ -90,6 +96,7 @@ public class EsperService {
         }
     }
 
+    @Override
     public PatternResponse addNewPattern(String patternName, String query) throws EPCompileException {
         boolean patternAlreadyCompiled = this.patternOperationsRepository.isPatternCompiled(patternName);
 
@@ -102,6 +109,7 @@ public class EsperService {
         return  null;
     }
 
+    @Override
     public PatternResponse deployPattern(String patternName,  MqttPublisherCallback callback) throws EPDeployException {
         EPCompiled epCompiled = this.patternOperationsRepository.findCompiledPattern(patternName);
 
@@ -117,12 +125,24 @@ public class EsperService {
         return null;
     }
 
+    @Override
+    public String getDeployedIdPattern(String name){
+        return this.patternOperationsRepository.getDeployedId(name);
+    }
+
+    @Override
     public void sendEventJson(String eventTypeName, String content) throws Exception {
         this.esperEngineRepository.sendEventJson(eventTypeName, content);
     }
 
+    @Override
     public void sendEvent(Object event, String eventType){
         this.esperEngineRepository.sendEvent(event, eventType);
+    }
+
+    @Override
+    public void undeployAll(){
+        esperEngineRepository.undeployAll();
     }
 
 }
