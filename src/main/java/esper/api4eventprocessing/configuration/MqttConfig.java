@@ -4,15 +4,16 @@ import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MqttConfig {
     @Bean
-    public IMqttClient mqttClient() throws MqttException {
+    public IMqttClient mqttClient(@Value("${mqttbrokerip}") String brokerIp, @Value("${openport}") String port) throws Exception {
         String publisherId = "spring-api";
-        IMqttClient client = new MqttClient("tcp://52.16.160.28:1883", publisherId);
+        IMqttClient client = new MqttClient("tcp://" + brokerIp + ":" + port, publisherId);
         MqttConnectOptions options = new MqttConnectOptions();
         options.setAutomaticReconnect(true);
         options.setCleanSession(true);
