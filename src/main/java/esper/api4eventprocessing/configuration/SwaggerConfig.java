@@ -1,22 +1,21 @@
 package esper.api4eventprocessing.configuration;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.tags.Tag;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
+import java.util.Arrays;
 
 @Configuration
 public class SwaggerConfig {
     @Bean
-    public Docket api(){
-        return new Docket(DocumentationType.SWAGGER_2)
-                //.host("http://localhost:8080/api/v1/")
-                .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.any())
-                .build();
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("API4EventProcessing Definition")
+                        .version("v1.0")
+                        .description("This is the API documentation for the API4EventProcessing application."))
+                ;
     }
 }
