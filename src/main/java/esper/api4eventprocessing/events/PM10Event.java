@@ -3,7 +3,7 @@ package esper.api4eventprocessing.events;
 public class PM10Event {
     public long timestamp;
     public float value;
-    public String  station;
+    public String station;
 
     public PM10Event (long timestamp, float value, String station){
         this.timestamp = timestamp;

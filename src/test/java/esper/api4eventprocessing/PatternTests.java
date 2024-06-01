@@ -4,7 +4,6 @@ import esper.api4eventprocessing.controllers.PatternController;
 import esper.api4eventprocessing.petitions.PatternPetition;
 import esper.api4eventprocessing.services.EsperService;
 import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;

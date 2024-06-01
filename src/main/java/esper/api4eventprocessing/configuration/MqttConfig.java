@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MqttConfig {
     @Bean
-    public IMqttClient mqttClient(@Value("${mqttbrokerip}") String brokerIp, @Value("${openport}") String port) throws Exception {
+    public IMqttClient mqttClient(@Value("54.78.231.141") String brokerIp, @Value("${openport}") String port) throws Exception {
         String publisherId = "spring-api";
         IMqttClient client = new MqttClient("tcp://" + brokerIp + ":" + port, publisherId);
         MqttConnectOptions options = new MqttConnectOptions();

@@ -1,7 +1,5 @@
 package esper.api4eventprocessing.events;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class HumidityEvent {
     public long timestamp;
     public float value;
