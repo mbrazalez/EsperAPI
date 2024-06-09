@@ -3,7 +3,6 @@ package esper.api4eventprocessing.repositories;
 import com.espertech.esper.common.client.EPCompiled;
 import com.espertech.esper.runtime.client.EPDeployment;
 import esper.api4eventprocessing.interfaces.IPatternOperations;
-import esper.api4eventprocessing.models.EventTypeDetails;
 import esper.api4eventprocessing.models.PatternDetails;
 
 import java.util.*;
